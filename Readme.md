@@ -26,28 +26,6 @@ A full-stack vacation rental platform — built end-to-end with session-based au
 
 ---
 
-## 📸 Project Preview
-
-
-| Page | Path |
-|---|---|
-| Homepage / Listings feed | `assets/screenshots/home.png` |
-| Listing details page | `assets/screenshots/listing-details.png` |
-| AI Trip Planner preferences page | `assets/screenshots/trip-planner.png` |
-| AI Day-by-Day Itinerary & Map | `assets/screenshots/trip-itinerary.png` |
-| My Saved Trips dashboard | `assets/screenshots/my-trips.png` |
-| Create listing form | `assets/screenshots/create-listing.png` |
-| Login / Signup | `assets/screenshots/auth.png` |
-| Booking checkout (Razorpay) | `assets/screenshots/checkout.png` |
-| My Bookings dashboard | `assets/screenshots/my-bookings.png` |
-
-```markdown
-<!-- Example embed once the file exists -->
-![Homepage](assets/screenshots/home.png)
-```
-
----
-
 ## 📑 Table of Contents
 
 - [About The Project](#-about-the-project)
