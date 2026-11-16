@@ -42,6 +42,7 @@ const router_reviews = require("./routes/review.js");
 const router_user = require("./routes/user.js");
 const router_bookings = require("./routes/booking.js");
 const router_trips = require("./routes/trip.js");
+const router_chatbot = require("./routes/chatbot.js");
 
 const secret = process.env.SECRET;
 
@@ -142,6 +143,7 @@ app.get("/terms", (req, res) => {
 app.use("/listings", router_listing);
 app.use("/listings/:id/reviews", router_reviews);
 app.use("/trips", router_trips);
+app.use("/api", router_chatbot);
 app.use("/", router_bookings);
 app.use("/", router_user);
 

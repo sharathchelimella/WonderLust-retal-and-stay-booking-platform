@@ -1,0 +1,115 @@
+<!-- ==========================================================================
+     WonderLust AI Customer Support Chatbot Partial
+     ========================================================================== -->
+
+<!-- Floating Chat Trigger Button -->
+<button type="button" class="wonderlust-chat-btn" id="wonderlustChatToggleBtn" aria-label="Open WonderLust AI Customer Support Chat">
+  <div class="chat-btn-icon-wrap">
+    <i class="fa-solid fa-headset chat-icon-open"></i>
+    <i class="fa-solid fa-xmark chat-icon-close"></i>
+  </div>
+  <span class="chat-online-pulse"></span>
+  <span class="chat-btn-badge" id="chatUnreadBadge">1</span>
+</button>
+
+<!-- Chat Window Widget -->
+<div class="wonderlust-chat-container" id="wonderlustChatContainer" aria-hidden="true">
+  
+  <!-- Chat Header -->
+  <div class="chat-header">
+    <div class="chat-header-info">
+      <div class="chat-avatar-wrap">
+        <i class="fa-solid fa-compass brand-compass-icon"></i>
+        <span class="status-dot"></span>
+      </div>
+      <div>
+        <h6 class="chat-title mb-0">WonderLust AI Assistant</h6>
+        <div class="chat-subtitle">
+          <span class="online-indicator"></span> 24/7 Customer Support
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-header-controls">
+      <button type="button" class="chat-control-btn" id="chatbotMinimizeBtn" title="Minimize Chat" aria-label="Minimize Chat">
+        <i class="fa-solid fa-minus"></i>
+      </button>
+      <button type="button" class="chat-control-btn" id="chatbotCloseBtn" title="Close Chat" aria-label="Close Chat">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Chat Messages Stream -->
+  <div class="chat-body" id="chatbotMessages">
+    
+    <!-- Welcome message from bot -->
+    <div class="chat-message bot-message">
+      <div class="message-avatar">
+        <i class="fa-solid fa-robot"></i>
+      </div>
+      <div class="message-bubble">
+        <p class="mb-2">
+          Hi! 👋 Welcome to WonderLust. I'm your AI travel and booking assistant. I can help you with stays, bookings, payments, cancellation policies, refunds, trip planning, and website services. How can I help you today?
+        </p>
+        <div class="message-time">Just now</div>
+      </div>
+    </div>
+
+    <!-- Quick suggestion pills -->
+    <div class="chat-suggestions" id="chatbotSuggestions">
+      <span class="suggestion-chip" data-query="How do I book a stay?">
+        <i class="fa-solid fa-calendar-check me-1"></i>How do I book a stay?
+      </span>
+      <span class="suggestion-chip" data-query="What is the cancellation policy?">
+        <i class="fa-solid fa-arrow-rotate-left me-1"></i>Cancellation & Refund Policy
+      </span>
+      <span class="suggestion-chip" data-query="How does the AI Trip Planner work?">
+        <i class="fa-solid fa-wand-magic-sparkles me-1"></i>AI Trip Planner
+      </span>
+      <span class="suggestion-chip" data-query="Which payment methods are accepted?">
+        <i class="fa-solid fa-credit-card me-1"></i>Payment Methods & Security
+      </span>
+      <span class="suggestion-chip" data-query="What are the Terms of Service?">
+        <i class="fa-solid fa-file-shield me-1"></i>Terms & Policies
+      </span>
+    </div>
+
+    <!-- Typing Indicator (hidden by default) -->
+    <div class="chat-message bot-message typing-indicator-wrap" id="chatbotTypingIndicator" style="display: none;">
+      <div class="message-avatar">
+        <i class="fa-solid fa-robot"></i>
+      </div>
+      <div class="message-bubble typing-bubble">
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Chat Footer & Input Form -->
+  <form class="chat-footer" id="chatbotForm" autocomplete="off">
+    <input type="hidden" id="chatbotCsrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+    
+    <div class="chat-input-wrap">
+      <input 
+        type="text" 
+        class="chat-input" 
+        id="chatbotInput" 
+        placeholder="Ask about stays, bookings, policies, or trip planning..." 
+        maxlength="500"
+        required
+      >
+      <button type="submit" class="chat-send-btn" id="chatbotSendBtn" aria-label="Send Message">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+    
+    <div class="chat-disclaimer">
+      <i class="fa-solid fa-shield-halved text-success me-1"></i> Dedicated WonderLust Support Assistant
+    </div>
+  </form>
+
+</div>

@@ -132,6 +132,14 @@ This project exists to demonstrate practical full-stack ability: designing a rel
 - **Interactive Route Map**: Side-by-side Mapbox GL JS map with numbered visit-order markers, route polylines, and interactive day switcher tabs.
 - **Saved Trips Dashboard (`/trips`)**: Logged-in users can save, view, reopen, print, and delete their customized trip itineraries.
 
+### 🤖 AI Customer Support Chatbot
+- **Floating Widget on Every Page**: Accessible 24/7 via a floating button in the bottom-right corner with a pulsing live status indicator and quick suggestion chips.
+- **Strict Website-Only Scope**: The assistant is grounded exclusively in WonderLust services, bookings, stays, policies, and payments. Any off-topic requests (world politics, general trivia, coding requests, general jokes) are politely refused.
+- **Prompt Injection Defense**: Multi-layered guardrails detect and block jailbreaks, role reversal, and prompt manipulation attempts.
+- **Booking & Policy Assistance**: Explains how to book stays, server-side pricing (*Nights × Rate + 18% GST*), Razorpay payment verification, free cancellation before check-in, and automated 100% refunds.
+- **Personalized Context**: Securely retrieves and summarizes active or past bookings from MongoDB for authenticated users.
+- **Responsive & Interactive**: Features animated typing indicators, quick suggestion chips, message bubbles, markdown parsing for links/lists, and mobile-optimized viewports.
+
 ### 🎨 UI
 - Server-rendered EJS with `ejs-mate` layouts, a shared navbar/footer, and flash messaging for success/error feedback
 - Responsive, mobile-friendly Bootstrap-based layout
@@ -493,6 +501,12 @@ ay check |
 | GET | `/:id` | View specific saved itinerary with Mapbox route & Google Maps navigation | `isLoggedIn`, `isTripOwner` |
 | DELETE | `/:id` | Delete a saved trip itinerary | `isLoggedIn`, `isTripOwner` |
 
+**AI Customer Support Chatbot** — mounted at `/api`
+
+| Method | Route | Purpose | Guarded by |
+|---|---|---|---|
+| POST | `/chat` | Process customer support inquiries with strict website-only grounding | Public, Rate-limited |
+
 ---
 
 ## 📁 Project Structure
@@ -510,6 +524,7 @@ Wanderlust-Travel-Stay-Booking-Application/
 │
 ├── controllers/
 │   ├── booking.js         # Booking lifecycle + Razorpay integration
+│   ├── chatbot.js         # AI Customer Support Chatbot controller
 │   ├── listing.js         # Listing CRUD, search, geocoding
 │   ├── otp.js              # OTP request/verify logic
 │   ├── review.js          # Review create/delete
@@ -529,9 +544,11 @@ Wanderlust-Travel-Stay-Booking-Application/
 │
 ├── public/
 │   ├── css/                 # Per-page stylesheets
+│   │   ├── chatbot.css      # Floating AI Chatbot responsive widget styles
 │   │   ├── trip-planner.css # AI Trip Planner responsive UI & animations
 │   │   └── ...
 │   └── js/
+│       ├── chatbot.js       # Floating AI Chatbot client & markdown renderer
 │       ├── map.js           # Mapbox GL rendering on the listing page
 │       ├── trip-map.js      # Interactive route map with numbered markers & polylines
 │       ├── trip-planner.js  # Dynamic days calculation, preference toggles & AJAX flow
@@ -539,6 +556,7 @@ Wanderlust-Travel-Stay-Booking-Application/
 │
 ├── routes/
 │   ├── booking.js
+│   ├── chatbot.js          # AI Chatbot endpoint with rate limiting
 │   ├── listing.js
 │   ├── review.js
 │   ├── trip.js             # AI Trip Planner REST routes with rate limiting
@@ -547,17 +565,19 @@ Wanderlust-Travel-Stay-Booking-Application/
 ├── tests/
 │   ├── auth.test.js         # Signup, login, OTP, Google OAuth, password reset
 │   ├── bookings.test.js     # Overlap detection, pricing, Razorpay verification
+│   ├── chatbot.test.js      # Chatbot website-only grounding, prompt injection defense
 │   ├── listings.test.js     # CRUD + ownership authorization
 │   └── trips.test.js        # AI trip planner validation, generation, saving, authorization
 │
 ├── utility/
 │   ├── aiPlanner.js         # Smart AI itinerary generation engine & Mapbox enricher
+│   ├── chatbotEngine.js     # Grounded AI customer support engine & safety guardrails
 │   ├── ExpressError.js      # Custom error class
 │   └── wrapAsync.js          # Async route error wrapper
 │
 ├── views/
 │   ├── bookings/             # Checkout + my-bookings pages
-│   ├── includes/              # navbar, footer, flash partials
+│   ├── includes/              # navbar, footer, chatbot, flash partials
 │   ├── layouts/                # ejs-mate boilerplate layout
 │   ├── listings/                # index, show, new, edit
 │   ├── trips/                   # plan.ejs, show.ejs, index.ejs
@@ -665,8 +685,9 @@ Runs `jest --runInBand --detectOpenHandles --forceExit`. Tests spin up `mongodb-
 | `tests/bookings.test.js` | Non-overlapping bookings + server-side price calculation, overlap rejection, Razorpay signature verification confirming a booking |
 | `tests/listings.test.js` | Owner CRUD flow, non-owner update/delete rejection |
 | `tests/trips.test.js` | AI Trip preferences rendering, input date validation, AI itinerary generation with navigation URLs, authenticated trip saving, user trips list, and ownership authorization |
+| `tests/chatbot.test.js` | AI Chatbot customer support query answering, strict website-only scope enforcement, off-topic rejection, prompt injection defense, and authenticated booking status lookup |
 
-22 test cases total across 4 test suites (100% passing).
+30 test cases total across 5 test suites (100% passing).
 
 ---
 
