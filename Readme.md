@@ -28,7 +28,6 @@ A full-stack vacation rental platform — built end-to-end with session-based au
 
 ## 📸 Project Preview
 
-> Screenshots aren't bundled with this README yet. Drop images into `assets/screenshots/` using the filenames below, and they'll render automatically once pushed.
 
 | Page | Path |
 |---|---|
