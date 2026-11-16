@@ -26,8 +26,24 @@ A full-stack vacation rental platform — built end-to-end with session-based au
 
 ---
 
+## 📸 Project Preview
+
+| Feature / Page | Description |
+|---|---|
+| **Homepage & Infinite Scroll** | Lazy loading with IntersectionObserver, dynamic GST tax calculator toggle, Mapbox cluster map view |
+| **Solo Room Shares & Match** | State & City cascading stay discovery, compatibility scoring, live pool chat, multi-account split payments |
+| **AI Travel Planner** | Personalized multi-day custom itineraries powered by Google Gemini AI with interactive Mapbox route maps |
+| **AI Travel Chatbot** | 24/7 floating assistant with contextual recommendations and itinerary suggestions |
+| **Listing Details & Reviews** | Real-time calendar availability, verified guest reviews gated by completed stays, host profile |
+| **Booking & Split Checkout** | Individual Razorpay checkouts per co-traveler, partial booking reservation locks, automated cancellation refunds |
+| **Wishlist & User Profile** | Instant AJAX save/heart stays, travel preferences (gender, sleep schedule, smoking rule) |
+| **Host Dashboard** | Occupancy metrics, revenue analytics, listing lifecycle management, booking approvals |
+
+---
+
 ## 📑 Table of Contents
 
+- [Project Preview](#-project-preview)
 - [About The Project](#-about-the-project)
 - [Key Features](#-key-features)
 - [Tech Stack](#-tech-stack)
