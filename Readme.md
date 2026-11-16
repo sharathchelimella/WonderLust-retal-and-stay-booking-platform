@@ -15,11 +15,11 @@ A full-stack vacation rental platform — built end-to-end with session-based au
 [![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white)](https://jestjs.io/)
 [![Live Demo](https://img.shields.io/badge/Live_Demo-wanderlust.swarajvecha.in-fe424d?style=for-the-badge&logo=google-chrome&logoColor=white)](https://wanderlust.swarajvecha.in/)
 
-[![GitHub Repo stars](https://img.shields.io/github/stars/Swarajbabu/Wanderlust-Travel-Stay-Booking-Application?style=flat-square)](https://github.com/Swarajbabu/Wanderlust-Travel-Stay-Booking-Application/stargazers)
-[![GitHub last commit](https://img.shields.io/github/last-commit/Swarajbabu/Wanderlust-Travel-Stay-Booking-Application?style=flat-square)](https://github.com/Swarajbabu/Wanderlust-Travel-Stay-Booking-Application/commits/main)
-[![Open Issues](https://img.shields.io/github/issues/Swarajbabu/Wanderlust-Travel-Stay-Booking-Application?style=flat-square)](https://github.com/Swarajbabu/Wanderlust-Travel-Stay-Booking-Application/issues)
+[![GitHub Repo stars](https://img.shields.io/github/stars/sharathchelimella/WonderLust-retal-and-stay-booking-platform?style=flat-square)](https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform/stargazers)
+[![GitHub last commit](https://img.shields.io/github/last-commit/sharathchelimella/WonderLust-retal-and-stay-booking-platform?style=flat-square)](https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform/commits/main)
+[![Open Issues](https://img.shields.io/github/issues/sharathchelimella/WonderLust-retal-and-stay-booking-platform?style=flat-square)](https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform/issues)
 
-[**🌐 Live Demo**](https://wanderlust.swarajvecha.in/) · [**Report Bug**](https://github.com/Swarajbabu/Wanderlust-Travel-Stay-Booking-Application/issues) · [**Request Feature**](https://github.com/Swarajbabu/Wanderlust-Travel-Stay-Booking-Application/issues)
+[**🌐 Live Demo**](https://wanderlust.swarajvecha.in/) · [**Report Bug**](https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform/issues) · [**Request Feature**](https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform/issues)
 
 </div>
 
@@ -123,6 +123,17 @@ This project exists to demonstrate practical full-stack ability: designing a rel
 - Gated behind a real stay: only guests with a **confirmed** booking whose check-out date has already passed can review a listing
 - Only the original author can delete their review
 - Deleting a listing cascades to delete its associated reviews
+
+### ✈️ AI Trip Planner
+- **Dedicated Planner Page (`/trips/plan`)**: Personalized travel itinerary generator with automatic days calculation based on check-in and check-out dates.
+- **Pre-Fill from Property**: Every listing details page features a **"Plan a Trip to [Location]"** button that automatically pre-populates the destination.
+- **Selectable Travel Preferences**: Multi-select categories with icons — 🏔️ Adventure, 🌿 Nature, 🎭 Culture, 🍜 Food, 🏛️ Heritage, and 📍 Famous Places.
+- **Custom Budget & Pace**: Options for Budget, Moderate, Luxury, and Relaxed, Balanced, or Packed itineraries.
+- **Smart AI Engine**: Supports Google Gemini API & OpenAI API with a built-in knowledge base engine that clusters attractions geographically to avoid backtracking.
+- **Detailed Itinerary Cards**: Shows place name, location, short description, importance, speciality, best time to visit, exploration duration, arrival time, and departure time.
+- **Turn-by-Turn Google Maps Navigation**: Direct navigation button to verified destination coordinates plus an inter-destination route button (`Next Destination →`) using the official Google Maps Directions API URL.
+- **Interactive Route Map**: Side-by-side Mapbox GL JS map with numbered visit-order markers, route polylines, and interactive day switcher tabs.
+- **Saved Trips Dashboard (`/trips`)**: Logged-in users can save, view, reopen, print, and delete their customized trip itineraries.
 
 ### 🎨 UI
 - Server-rendered EJS with `ejs-mate` layouts, a shared navbar/footer, and flash messaging for success/error feedback
@@ -400,7 +411,8 @@ All routes below are taken directly from `routes/*.js`.
 
 | Method | Route | Purpose | Guarded by |
 |---|---|---|---|
-| POST | `/` | Create a review | `isLoggedIn`, `validateReview`, completed-stay check |
+| POST | `/` | Create a review | `isLoggedIn`, `validateReview`, completed-st
+ay check |
 | DELETE | `/:reviewId` | Delete a review | `isLoggedIn`, `isReviewAuthor` |
 
 **Bookings** — mounted at `/`
