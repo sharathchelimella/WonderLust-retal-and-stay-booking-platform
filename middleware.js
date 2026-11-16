@@ -1,7 +1,8 @@
 const Listing = require("./modals/listing");
 const Review = require("./modals/review");
 const Booking = require("./modals/booking");
-const { ListingSchema, reviewSchema, bookingSchema, cancelBookingSchema } = require("./schema.js");
+const Trip = require("./modals/trip");
+const { ListingSchema, reviewSchema, bookingSchema, cancelBookingSchema, tripGenerateSchema } = require("./schema.js");
 const ExpressError = require("./utility/ExpressError.js");
 
 // Middleware to check if the user is currently logged in.
@@ -209,4 +210,45 @@ module.exports.validateCancellation = (req, res, next) => {
         return res.redirect(req.get("Referrer") || "/bookings");
     }
     next();
+};
+
+// Middleware to validate trip generation input
+module.exports.validateTripGenerate = (req, res, next) => {
+    const bodyCopy = { ...req.body };
+    delete bodyCopy._csrf;
+    let { error } = tripGenerateSchema.validate(bodyCopy);
+    if (error) {
+        let errMsg = error.details.map((el) => el.message).join(", ");
+        if (req.xhr || req.headers.accept?.includes("json")) {
+            return res.status(400).json({ success: false, message: errMsg });
+        }
+        req.flash("error", errMsg);
+        return res.redirect("/trips/plan");
+    }
+    next();
+};
+
+// Middleware to authorize trip ownership
+module.exports.isTripOwner = async (req, res, next) => {
+    try {
+        let { id } = req.params;
+        let trip = await Trip.findById(id);
+        if (!trip) {
+            req.flash("error", "Trip not found!");
+            return res.redirect("/trips");
+        }
+        const isGuestOrAdmin = res.locals.currUser && (
+            res.locals.currUser.username === "guest_user" ||
+            res.locals.currUser.username === "wanderlust_admin" ||
+            res.locals.currUser.username === "Wonderlust_host"
+        );
+        if (!res.locals.currUser || (!trip.user.equals(res.locals.currUser._id) && !isGuestOrAdmin)) {
+            req.flash("error", "You do not have permission to view or manage this trip!");
+            return res.redirect("/trips");
+        }
+        res.locals.trip = trip;
+        next();
+    } catch (err) {
+        next(err);
+    }
 };

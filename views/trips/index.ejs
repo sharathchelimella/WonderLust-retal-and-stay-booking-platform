@@ -1,0 +1,138 @@
+<% layout('layouts/boilerplate') -%>
+<link rel="stylesheet" href="/css/trip-planner.css">
+
+<div class="row mt-4 mb-5">
+  <div class="col-12">
+
+    <!-- Dashboard Header -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+      <div>
+        <h2 class="fw-bold text-dark mb-1">
+          <i class="fa-solid fa-map-location-dot text-danger me-2"></i>My Saved Trips
+        </h2>
+        <p class="text-secondary mb-0">View, reopen, or manage your AI-generated travel itineraries.</p>
+      </div>
+
+      <a href="/trips/plan" class="btn btn-danger rounded-pill px-4 py-2 fw-semibold shadow-sm d-flex align-items-center">
+        <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Plan a New Trip
+      </a>
+    </div>
+
+    <% if (!trips || trips.length === 0) { %>
+      <!-- Empty State -->
+      <div class="card border-0 shadow-sm rounded-4 p-5 text-center my-4 bg-white">
+        <div class="py-4">
+          <div class="mb-3">
+            <i class="fa-solid fa-plane-departure text-danger" style="font-size: 3.5rem; opacity: 0.85;"></i>
+          </div>
+          <h3 class="fw-bold text-dark mb-2">No Saved Trips Yet</h3>
+          <p class="text-muted max-w-50 mx-auto mb-4" style="max-width: 500px;">
+            You haven't saved any AI trip itineraries yet. Pick a destination, choose your preferences, and let our smart travel planner design your vacation.
+          </p>
+          <a href="/trips/plan" class="btn btn-danger rounded-pill px-4 py-2 fw-semibold shadow-sm">
+            <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Plan Your First Trip with AI
+          </a>
+        </div>
+      </div>
+    <% } else { %>
+      <!-- Trips Grid -->
+      <div class="row g-4">
+        <% trips.forEach(function(trip) { %>
+          <div class="col-lg-4 col-md-6 col-12">
+            <div class="saved-trip-card">
+              
+              <div>
+                <!-- Top Badges -->
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <span class="badge bg-danger text-white rounded-pill px-3 py-1">
+                    <i class="fa-solid fa-clock me-1"></i><%= trip.totalDays %> Days
+                  </span>
+                  <% if (trip.budget) { %>
+                    <span class="badge bg-light text-secondary border rounded-pill px-2 py-1 small">
+                      💰 <%= trip.budget %>
+                    </span>
+                  <% } %>
+                </div>
+
+                <!-- Title & Destination -->
+                <h4 class="saved-trip-destination"><%= trip.destination %></h4>
+                <p class="text-secondary small mb-3">
+                  <i class="fa-regular fa-calendar me-1 text-danger"></i>
+                  <%= new Date(trip.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %> &mdash; 
+                  <%= new Date(trip.checkOut).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                </p>
+
+                <!-- Preferences Tags -->
+                <% if (trip.preferences && trip.preferences.length > 0) { %>
+                  <div class="mb-3 d-flex flex-wrap gap-1">
+                    <% trip.preferences.slice(0, 3).forEach(function(pref) { %>
+                      <span class="badge bg-light text-secondary border rounded-pill"><%= pref %></span>
+                    <% }); %>
+                    <% if (trip.preferences.length > 3) { %>
+                      <span class="badge bg-light text-muted border rounded-pill">+<%= trip.preferences.length - 3 %></span>
+                    <% } %>
+                  </div>
+                <% } %>
+
+                <!-- Attractions Count -->
+                <% 
+                  let totalPlaces = 0;
+                  if (trip.days) {
+                    trip.days.forEach(d => { if (d.places) totalPlaces += d.places.length; });
+                  }
+                %>
+                <p class="text-muted small mb-3">
+                  <i class="fa-solid fa-location-dot text-danger me-1"></i>
+                  <strong><%= totalPlaces %></strong> tourist attractions scheduled
+                </p>
+              </div>
+
+              <!-- Card Action Buttons -->
+              <div class="pt-3 border-top d-flex justify-content-between align-items-center">
+                <a href="/trips/<%= trip._id %>" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-semibold">
+                  <i class="fa-solid fa-eye me-1"></i>View Itinerary
+                </a>
+
+                <!-- Delete Trip Trigger -->
+                <button type="button" class="btn btn-light btn-sm text-danger border-0 rounded-circle" data-bs-toggle="modal" data-bs-target="#deleteTripModal<%= trip._id %>" title="Delete Trip">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Delete Confirmation Modal -->
+          <div class="modal fade" id="deleteTripModal<%= trip._id %>" tabindex="-1" aria-labelledby="deleteTripModalLabel<%= trip._id %>" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content rounded-4 border-0 shadow">
+                <div class="modal-header border-bottom-0 pb-0">
+                  <h5 class="modal-title fw-bold text-danger" id="deleteTripModalLabel<%= trip._id %>">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i>Delete Itinerary
+                  </h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body py-3">
+                  <p class="text-secondary mb-0">
+                    Are you sure you want to delete your trip to <strong><%= trip.destination %></strong>? This action cannot be undone.
+                  </p>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                  <button type="button" class="btn btn-light rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                  <form action="/trips/<%= trip._id %>?_method=DELETE" method="POST" class="m-0">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <button type="submit" class="btn btn-danger rounded-pill px-4 fw-semibold">
+                      <i class="fa-solid fa-trash-can me-1"></i>Delete
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <% }); %>
+      </div>
+    <% } %>
+
+  </div>
+</div>

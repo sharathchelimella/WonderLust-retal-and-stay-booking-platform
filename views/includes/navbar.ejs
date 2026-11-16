@@ -10,6 +10,9 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav align-items-center">
                 <a class="nav-link nav-pill-btn" href="/listings">Explore</a>
+                <a class="nav-link nav-pill-btn nav-plan-trip-pill" href="/trips/plan">
+                    <i class="fa-solid fa-wand-magic-sparkles text-danger me-1"></i>Plan a Trip
+                </a>
             </div>
 
             <div class="navbar-nav mx-auto my-2 my-lg-0">
@@ -30,6 +33,9 @@
                     </a>
                 <% } %>
                 <% if(typeof currUser !== 'undefined' && currUser){ %>
+                    <a class="nav-link nav-pill-btn" href="/trips">
+                        <i class="fa-solid fa-map-location-dot me-1 text-danger"></i>My Trips
+                    </a>
                     <a class="nav-link nav-pill-btn" href="/bookings">
                         <i class="fa-regular fa-calendar-check me-1 text-danger"></i>My Bookings
                     </a>
@@ -44,6 +50,7 @@
                     <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
                         <% if(typeof currUser === 'undefined' || !currUser){ %>
                             <li><a class="dropdown-item fw-bold text-danger" href="/guest-login"><i class="fa-solid fa-bolt me-2"></i>Guest Login (1-Click)</a></li>
+                            <li><a class="dropdown-item" href="/trips/plan"><i class="fa-solid fa-wand-magic-sparkles me-2 text-danger"></i>Plan a Trip with AI</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item fw-semibold" href="/signup">Sign up</a></li>
                             <li><a class="dropdown-item" href="/login">Log in</a></li>
@@ -58,8 +65,10 @@
                                 </span>
                             </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/listings/new"><i class="fa-solid fa-house-chimney me-2 text-secondary"></i>Wanderlust your home</a></li>
+                            <li><a class="dropdown-item" href="/trips/plan"><i class="fa-solid fa-wand-magic-sparkles me-2 text-danger"></i>Plan a Trip with AI</a></li>
+                            <li><a class="dropdown-item" href="/trips"><i class="fa-solid fa-map-location-dot me-2 text-secondary"></i>My Saved Trips</a></li>
                             <li><a class="dropdown-item" href="/bookings"><i class="fa-regular fa-calendar-check me-2 text-secondary"></i>My Bookings</a></li>
+                            <li><a class="dropdown-item" href="/listings/new"><i class="fa-solid fa-house-chimney me-2 text-secondary"></i>Wanderlust your home</a></li>
                             <li><a class="dropdown-item fw-bold text-danger" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i>Log out</a></li>
                         <% } %>
                     </ul>

@@ -332,6 +332,10 @@
             <i class="fa-solid fa-calendar-check me-2"></i>Reserve
           </a>
 
+          <a href="/trips/plan?destination=<%= encodeURIComponent(listings.location + ', ' + listings.country) %>&listingId=<%= listings._id %>" class="btn btn-outline-danger w-100 rounded-pill py-2 fw-semibold mt-2 d-flex align-items-center justify-content-center shadow-sm trip-plan-property-btn">
+            <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Plan a Trip to <%= listings.location %>
+          </a>
+
           <p class="reserve-note">You won't be charged yet &mdash; pick your dates and guests on the next step.</p>
 
           <div class="reserve-divider"></div>

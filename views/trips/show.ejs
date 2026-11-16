@@ -1,0 +1,259 @@
+<% layout('layouts/boilerplate') -%>
+<link rel="stylesheet" href="/css/trip-planner.css">
+
+<script>
+  window.mapToken = "<%= mapToken %>";
+</script>
+
+<div class="row mt-3 mb-5">
+  <div class="col-12">
+
+    <!-- Top Action & Info Bar -->
+    <div class="itinerary-header-card">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+        <div>
+          <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+            <span class="badge bg-danger rounded-pill px-3 py-1 fw-bold">
+              <i class="fa-solid fa-sparkles me-1"></i> AI Itinerary
+            </span>
+            <span class="badge bg-light text-dark rounded-pill px-3 py-1 border">
+              <i class="fa-regular fa-calendar me-1 text-danger"></i>
+              <%= new Date(trip.checkIn).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %> &mdash; 
+              <%= new Date(trip.checkOut).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+            </span>
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1">
+              <i class="fa-solid fa-clock me-1"></i> <%= trip.totalDays || (trip.days ? trip.days.length : 1) %> Days
+            </span>
+            <% if (trip.budget) { %>
+              <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1">
+                💰 <%= trip.budget %>
+              </span>
+            <% } %>
+            <% if (trip.pace) { %>
+              <span class="badge bg-warning-subtle text-dark border border-warning-subtle rounded-pill px-3 py-1">
+                ⚡ <%= trip.pace %> Pace
+              </span>
+            <% } %>
+          </div>
+
+          <h1 class="fw-bold text-dark mb-1"><%= trip.title || ('Trip to ' + trip.destination) %></h1>
+          <p class="text-secondary mb-2">
+            <i class="fa-solid fa-location-dot text-danger me-1"></i>
+            <strong><%= trip.destination %></strong>
+            <% if (trip.preferences && trip.preferences.length > 0) { %>
+              &nbsp;&bull;&nbsp;
+              <span class="text-muted">Preferences:</span> 
+              <% trip.preferences.forEach(function(pref) { %>
+                <span class="badge bg-light text-secondary border rounded-pill me-1"><%= pref %></span>
+              <% }); %>
+            <% } %>
+          </p>
+          <% if (trip.summary) { %>
+            <p class="text-muted small mb-0 max-w-75"><%= trip.summary %></p>
+          <% } %>
+        </div>
+
+        <!-- Header Actions -->
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <% if (!isSaved) { %>
+            <% if (typeof currUser !== 'undefined' && currUser) { %>
+              <form action="/trips/save" method="POST" class="m-0">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                <button type="submit" class="btn btn-danger rounded-pill px-4 fw-semibold shadow-sm">
+                  <i class="fa-regular fa-bookmark me-2"></i>Save to My Trips
+                </button>
+              </form>
+            <% } else { %>
+              <a href="/login" class="btn btn-outline-danger rounded-pill px-4 fw-semibold">
+                <i class="fa-solid fa-lock me-2"></i>Log in to Save
+              </a>
+            <% } %>
+          <% } else { %>
+            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-semibold">
+              <i class="fa-solid fa-circle-check me-1"></i> Saved to Account
+            </span>
+          <% } %>
+
+          <a href="/trips/plan?destination=<%= encodeURIComponent(trip.destination) %>" class="btn btn-light rounded-pill px-3 border shadow-sm" title="Edit trip parameters">
+            <i class="fa-solid fa-sliders me-1"></i>Edit Preferences
+          </a>
+
+          <button type="button" class="btn btn-light rounded-pill px-3 border shadow-sm" onclick="window.print()" title="Print or save as PDF">
+            <i class="fa-solid fa-print me-1"></i>Print
+          </button>
+        </div>
+      </div>
+
+      <hr class="my-3" style="border-color: #f1f5f9;">
+
+      <!-- Day Navigation Switcher Pills -->
+      <div class="day-nav-pills mb-0">
+        <button type="button" class="day-pill-btn active" data-day="all">
+          <i class="fa-solid fa-layer-group"></i> All Days
+        </button>
+        <% (trip.days || []).forEach(function(day) { %>
+          <button type="button" class="day-pill-btn" data-day="<%= day.dayNumber %>">
+            <i class="fa-solid fa-calendar-day"></i> Day <%= day.dayNumber %>
+          </button>
+        <% }); %>
+      </div>
+    </div>
+
+    <!-- Main Content Grid: Itinerary List (Left) + Interactive Map (Right) -->
+    <div class="row g-4">
+
+      <!-- LEFT: Day-by-Day Places Timeline -->
+      <div class="col-lg-7 col-12">
+        <% (trip.days || []).forEach(function(day) { %>
+          <div class="day-section" data-day="<%= day.dayNumber %>">
+            
+            <!-- Day Banner -->
+            <div class="day-header-banner">
+              <div>
+                <h3 class="day-title">
+                  Day <%= day.dayNumber %> &mdash; <%= day.theme || 'Exploration' %>
+                </h3>
+                <% if (day.summary) { %>
+                  <p class="text-muted small mb-0 mt-1"><%= day.summary %></p>
+                <% } %>
+              </div>
+              <span class="day-theme-badge">
+                <i class="fa-solid fa-location-crosshairs me-1"></i>
+                <%= day.places ? day.places.length : 0 %> Attractions
+              </span>
+            </div>
+
+            <!-- Places Timeline -->
+            <div class="timeline-container">
+              <% (day.places || []).forEach(function(place, idx) { %>
+                <div class="place-card-wrapper">
+                  <div class="place-step-badge"><%= idx + 1 %></div>
+
+                  <div class="place-card" data-day="<%= day.dayNumber %>" data-step="<%= idx + 1 %>">
+                    
+                    <!-- Place Header -->
+                    <div class="place-top-row">
+                      <div>
+                        <h4 class="place-name"><%= place.name %></h4>
+                        <div class="place-location-sub">
+                          <i class="fa-solid fa-location-dot text-danger"></i>
+                          <span><%= place.location %></span>
+                        </div>
+                      </div>
+
+                      <div class="place-timing-pill">
+                        <i class="fa-regular fa-clock text-danger"></i>
+                        <span>
+                          <%= place.arrivalTime || 'Morning' %> 
+                          <% if (place.departureTime) { %> &mdash; <%= place.departureTime %><% } %>
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- Short Description -->
+                    <p class="place-description">
+                      <%= place.shortDescription %>
+                    </p>
+
+                    <!-- Callout Info Grid (Importance, Speciality, Best Time, Duration) -->
+                    <div class="place-callout-grid">
+                      <% if (place.importance) { %>
+                        <div class="callout-item">
+                          <strong><i class="fa-solid fa-star text-warning me-1"></i>Importance</strong>
+                          <span><%= place.importance %></span>
+                        </div>
+                      <% } %>
+
+                      <% if (place.speciality) { %>
+                        <div class="callout-item">
+                          <strong><i class="fa-solid fa-gem text-primary me-1"></i>Speciality</strong>
+                          <span><%= place.speciality %></span>
+                        </div>
+                      <% } %>
+
+                      <div class="callout-item">
+                        <strong><i class="fa-regular fa-sun text-warning me-1"></i>Best Time to Visit</strong>
+                        <span><%= place.bestTimeToVisit || 'Morning or Afternoon' %></span>
+                      </div>
+
+                      <div class="callout-item">
+                        <strong><i class="fa-solid fa-hourglass-half text-danger me-1"></i>Exploration Duration</strong>
+                        <span><%= place.explorationDuration || '1 - 2 hours' %></span>
+                      </div>
+                    </div>
+
+                    <!-- Navigation Action Buttons -->
+                    <div class="place-nav-actions">
+                      <!-- Direct Google Maps Navigation -->
+                      <a 
+                        href="<%= place.googleMapsUrl %>" 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        class="btn-gmaps-direct" 
+                        title="Open turn-by-turn directions in Google Maps"
+                      >
+                        <i class="fa-brands fa-google"></i>
+                        <i class="fa-solid fa-diamond-turn-right"></i>
+                        <span>Navigate with Google Maps</span>
+                      </a>
+
+                      <!-- Inter-destination Next Attraction Route -->
+                      <% if (place.nextDestination && place.nextGoogleMapsUrl) { %>
+                        <a 
+                          href="<%= place.nextGoogleMapsUrl %>" 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          class="btn-next-dest" 
+                          title="Navigate from <%= place.name %> to <%= place.nextDestination %>"
+                        >
+                          <i class="fa-solid fa-route"></i>
+                          <span>Next: <%= place.nextDestination %> &rarr;</span>
+                        </a>
+                      <% } %>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Inter-destination Travel Details (Between Stops) -->
+                <% if (place.nextDestination && (place.travelDistance || place.travelDuration)) { %>
+                  <div class="inter-destination-strip">
+                    <i class="fa-solid fa-car-side text-secondary"></i>
+                    <span>
+                      Driving to <strong><%= place.nextDestination %></strong>: 
+                      <%= place.travelDistance ? place.travelDistance : '' %>
+                      <%= (place.travelDistance && place.travelDuration) ? ' &bull; ' : '' %>
+                      <%= place.travelDuration ? place.travelDuration : '' %>
+                    </span>
+                  </div>
+                <% } %>
+
+              <% }); %>
+            </div>
+
+          </div>
+        <% }); %>
+      </div>
+
+      <!-- RIGHT: Sticky Interactive Route Map -->
+      <div class="col-lg-5 col-12">
+        <div class="sticky-trip-map">
+          <div class="map-floating-bar">
+            <span><i class="fa-solid fa-map-location-dot text-danger me-2"></i>Trip Route Map</span>
+            <span class="text-muted small">Numbered in visit order</span>
+          </div>
+          <div id="tripInteractiveMap"></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- Embedded JSON Data for Map & Scripts -->
+<script id="trip-data-json" type="application/json">
+  <%- JSON.stringify(trip) %>
+</script>
+
+<script src="/js/trip-map.js"></script>

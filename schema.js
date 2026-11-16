@@ -37,3 +37,23 @@ module.exports.cancelBookingSchema = Joi.object({
         "any.required": "Cancellation reason is required."
     })
 });
+
+module.exports.tripGenerateSchema = Joi.object({
+    destination: Joi.string().trim().min(2).max(150).required().messages({
+        "string.empty": "Please enter a destination to plan your trip.",
+        "any.required": "Destination is required."
+    }),
+    checkIn: Joi.date().iso().required().messages({
+        "any.required": "Check-in date is required."
+    }),
+    checkOut: Joi.date().iso().greater(Joi.ref("checkIn")).required().messages({
+        "date.greater": "Check-out date must be after check-in date.",
+        "any.required": "Check-out date is required."
+    }),
+    preferences: Joi.alternatives().try(
+        Joi.array().items(Joi.string()),
+        Joi.string()
+    ).optional(),
+    budget: Joi.string().valid("Budget", "Moderate", "Luxury").optional(),
+    pace: Joi.string().valid("Relaxed", "Balanced", "Packed").optional()
+});

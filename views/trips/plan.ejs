@@ -1,0 +1,259 @@
+<% layout('layouts/boilerplate') -%>
+<link rel="stylesheet" href="/css/trip-planner.css">
+
+<div class="row mt-3 mb-5">
+  <div class="col-lg-10 offset-lg-1 col-12">
+
+    <!-- Hero Header -->
+    <div class="planner-hero shadow-sm">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge bg-danger text-white rounded-pill px-3 py-1 fw-bold">
+          <i class="fa-solid fa-wand-magic-sparkles me-1"></i> AI Powered
+        </span>
+        <span class="badge bg-white text-secondary rounded-pill px-3 py-1 border">
+          <i class="fa-solid fa-route me-1"></i> Smart Itinerary
+        </span>
+      </div>
+      <h1 class="planner-title mb-2">Personalized AI Trip Planner</h1>
+      <p class="planner-subtitle mb-0">
+        Tell us where you want to go and what you love doing. Our AI crafts an optimized, day-by-day itinerary with exact timings, geographical route grouping, and turn-by-turn Google Maps navigation.
+      </p>
+    </div>
+
+    <!-- Planner Form Card -->
+    <div class="planner-card">
+      <form id="tripPlannerForm" action="/trips/generate" method="POST" novalidate class="needs-validation">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <input type="hidden" name="totalDays" id="totalDaysInput" value="3">
+        <input type="hidden" name="budget" id="tripBudget" value="Moderate">
+        <input type="hidden" name="pace" id="tripPace" value="Balanced">
+        <div id="prefHiddenInputs"></div>
+
+        <!-- Destination & Dates -->
+        <div class="row g-4 mb-4">
+          <div class="col-lg-6 col-12">
+            <label for="tripDestination" class="form-label section-label">
+              <i class="fa-solid fa-location-dot"></i> Where do you want to explore?
+            </label>
+            <div class="input-group input-group-lg">
+              <span class="input-group-text bg-white border-end-0 text-danger">
+                <i class="fa-solid fa-magnifying-glass-location"></i>
+              </span>
+              <input
+                type="text"
+                class="form-control border-start-0 ps-0 fw-semibold"
+                id="tripDestination"
+                name="destination"
+                value="<%= destination %>"
+                placeholder="e.g., Manali, Jaipur, Tokyo, Goa, Paris"
+                required
+                autocomplete="off"
+              >
+            </div>
+            <div class="form-text text-muted">
+              Enter any city, region, or vacation destination worldwide.
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-sm-6 col-12">
+            <label for="tripCheckIn" class="form-label section-label">
+              <i class="fa-regular fa-calendar-check"></i> Check-in Date
+            </label>
+            <input
+              type="date"
+              class="form-control form-control-lg fw-semibold"
+              id="tripCheckIn"
+              name="checkIn"
+              value="<%= checkIn %>"
+              required
+            >
+          </div>
+
+          <div class="col-lg-3 col-sm-6 col-12">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label for="tripCheckOut" class="form-label section-label mb-0">
+                <i class="fa-regular fa-calendar-xmark"></i> Check-out
+              </label>
+              <span class="days-count-badge" id="totalDaysBadge" style="display: none;">
+                <i class="fa-solid fa-clock"></i> <span id="daysCountText">3 Days</span>
+              </span>
+            </div>
+            <input
+              type="date"
+              class="form-control form-control-lg fw-semibold"
+              id="tripCheckOut"
+              name="checkOut"
+              value="<%= checkOut %>"
+              required
+            >
+          </div>
+        </div>
+
+        <hr class="my-4" style="border-color: #f1f5f9;">
+
+        <!-- Travel Preferences Selection Cards -->
+        <div class="mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <label class="section-label mb-0">
+              <i class="fa-solid fa-heart"></i> Select Your Travel Preferences
+            </label>
+            <span class="text-muted small">Select multiple interests</span>
+          </div>
+          <p class="text-muted small mb-3">Our AI prioritizes attractions, activities, and timings tailored to what you love most.</p>
+
+          <div class="pref-grid">
+            <!-- 1. Adventure -->
+            <div class="pref-card" data-pref="Adventure">
+              <div class="pref-check"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <div class="pref-icon">🏔️</div>
+                <div class="pref-title">Adventure</div>
+              </div>
+              <div class="pref-desc">Trekking, hiking, rafting, outdoor activities</div>
+            </div>
+
+            <!-- 2. Nature -->
+            <div class="pref-card active" data-pref="Nature">
+              <div class="pref-check"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <div class="pref-icon">🌿</div>
+                <div class="pref-title">Nature</div>
+              </div>
+              <div class="pref-desc">Waterfalls, mountains, forests, scenic viewpoints</div>
+            </div>
+
+            <!-- 3. Culture -->
+            <div class="pref-card" data-pref="Culture">
+              <div class="pref-check"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <div class="pref-icon">🎭</div>
+                <div class="pref-title">Culture</div>
+              </div>
+              <div class="pref-desc">Local traditions, museums, festivals & performances</div>
+            </div>
+
+            <!-- 4. Food -->
+            <div class="pref-card" data-pref="Food">
+              <div class="pref-check"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <div class="pref-icon">🍜</div>
+                <div class="pref-title">Food</div>
+              </div>
+              <div class="pref-desc">Famous restaurants, street food, local culinary gems</div>
+            </div>
+
+            <!-- 5. Heritage -->
+            <div class="pref-card" data-pref="Heritage">
+              <div class="pref-check"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <div class="pref-icon">🏛️</div>
+                <div class="pref-title">Heritage</div>
+              </div>
+              <div class="pref-desc">Historical monuments, forts, temples, ancient architecture</div>
+            </div>
+
+            <!-- 6. Famous Places -->
+            <div class="pref-card active" data-pref="Famous Places">
+              <div class="pref-check"><i class="fa-solid fa-check"></i></div>
+              <div>
+                <div class="pref-icon">📍</div>
+                <div class="pref-title">Famous Places</div>
+              </div>
+              <div class="pref-desc">Top-rated tourist attractions & must-visit highlights</div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="my-4" style="border-color: #f1f5f9;">
+
+        <!-- Budget & Travel Pace -->
+        <div class="row g-4 mb-4">
+          <div class="col-md-6 col-12">
+            <label class="section-label">
+              <i class="fa-solid fa-wallet"></i> Estimated Budget
+            </label>
+            <div class="choice-pills">
+              <div class="choice-pill budget-pill" data-val="Budget">
+                💵 Budget
+              </div>
+              <div class="choice-pill budget-pill active" data-val="Moderate">
+                ⚖️ Moderate
+              </div>
+              <div class="choice-pill budget-pill" data-val="Luxury">
+                💎 Luxury
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-12">
+            <label class="section-label">
+              <i class="fa-solid fa-gauge-high"></i> Travel Pace
+            </label>
+            <div class="choice-pills">
+              <div class="choice-pill pace-pill" data-val="Relaxed">
+                ☕ Relaxed
+              </div>
+              <div class="choice-pill pace-pill active" data-val="Balanced">
+                🚶 Balanced
+              </div>
+              <div class="choice-pill pace-pill" data-val="Packed">
+                ⚡ Packed
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="mt-4 pt-2">
+          <button type="submit" class="btn-generate-ai" id="generateTripBtn">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>Generate My AI Trip</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<!-- AI Generation Loading Overlay -->
+<div class="planner-loading-overlay" id="tripLoadingOverlay" aria-live="polite">
+  <div class="planner-loading-card">
+    <div class="spinner-travel">
+      <div class="compass-ring"></div>
+      <div class="center-plane">
+        <i class="fa-solid fa-plane"></i>
+      </div>
+    </div>
+    <h4 class="fw-bold text-dark mb-2">Generating Your AI Itinerary</h4>
+    <p class="loading-dynamic-text mb-3" id="loadingDynamicText">
+      Consulting AI travel guide...
+    </p>
+    <div class="progress" style="height: 6px; border-radius: 999px;">
+      <div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" style="width: 100%"></div>
+    </div>
+    <p class="text-muted small mt-3 mb-0">
+      Grouping attractions geographically to minimize travel time & preparing turn-by-turn navigation routes.
+    </p>
+  </div>
+</div>
+
+<script src="/js/trip-planner.js"></script>
+<script>
+  // Set default dates if empty
+  document.addEventListener("DOMContentLoaded", () => {
+    const inInput = document.getElementById("tripCheckIn");
+    const outInput = document.getElementById("tripCheckOut");
+    if (inInput && !inInput.value) {
+      const today = new Date();
+      inInput.value = today.toISOString().split("T")[0];
+    }
+    if (outInput && !outInput.value && inInput && inInput.value) {
+      const d = new Date(inInput.value);
+      d.setDate(d.getDate() + 3);
+      outInput.value = d.toISOString().split("T")[0];
+      outInput.dispatchEvent(new Event("change"));
+    }
+  });
+</script>

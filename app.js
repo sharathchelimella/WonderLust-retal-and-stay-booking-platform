@@ -41,6 +41,7 @@ const router_listing = require("./routes/listing.js");
 const router_reviews = require("./routes/review.js");
 const router_user = require("./routes/user.js");
 const router_bookings = require("./routes/booking.js");
+const router_trips = require("./routes/trip.js");
 
 const secret = process.env.SECRET;
 
@@ -83,6 +84,7 @@ app.use(helmet({
     crossOriginEmbedderPolicy: false,
 }));
 
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(methodOverride("_method"));
@@ -139,6 +141,7 @@ app.get("/terms", (req, res) => {
 // Route mountings
 app.use("/listings", router_listing);
 app.use("/listings/:id/reviews", router_reviews);
+app.use("/trips", router_trips);
 app.use("/", router_bookings);
 app.use("/", router_user);
 
