@@ -9,10 +9,11 @@ A full-stack vacation rental platform — built end-to-end with session-based au
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
-[![EJS](https://img.shields.io/badge/EJS-B4CA65?style=for-the-badge&logo=ejs&logoColor=black)](https://ejs.co/)
-[![Passport.js](https://img.shields.io/badge/Passport.js-34E27A?style=for-the-badge&logo=passport&logoColor=white)](https://www.passportjs.org/)
+[![Gemini AI](https://img.shields.io/badge/Gemini_AI-8E75B2?style=for-the-badge&logo=google&logoColor=white)](https://ai.google.dev/)
+[![Mapbox](https://img.shields.io/badge/Mapbox_GL-000000?style=for-the-badge&logo=mapbox&logoColor=white)](https://www.mapbox.com/)
 [![Razorpay](https://img.shields.io/badge/Razorpay-0C2451?style=for-the-badge&logo=razorpay&logoColor=white)](https://razorpay.com/)
 [![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white)](https://jestjs.io/)
+[![Bootstrap](https://img.shields.io/badge/Bootstrap_5-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
 [![Live Demo](https://img.shields.io/badge/Live_Demo-wanderlust.swarajvecha.in-fe424d?style=for-the-badge&logo=google-chrome&logoColor=white)](https://wanderlust.swarajvecha.in/)
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/sharathchelimella/WonderLust-retal-and-stay-booking-platform?style=flat-square)](https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform/stargazers)
@@ -33,6 +34,9 @@ A full-stack vacation rental platform — built end-to-end with session-based au
 |---|---|
 | Homepage / Listings feed | `assets/screenshots/home.png` |
 | Listing details page | `assets/screenshots/listing-details.png` |
+| AI Trip Planner preferences page | `assets/screenshots/trip-planner.png` |
+| AI Day-by-Day Itinerary & Map | `assets/screenshots/trip-itinerary.png` |
+| My Saved Trips dashboard | `assets/screenshots/my-trips.png` |
 | Create listing form | `assets/screenshots/create-listing.png` |
 | Login / Signup | `assets/screenshots/auth.png` |
 | Booking checkout (Razorpay) | `assets/screenshots/checkout.png` |
@@ -279,6 +283,30 @@ Guest → GET /listings/:id → POST /listings/:id/reviews
       → Yes → review saved, pushed onto listing.reviews
 ```
 
+### AI Trip Planning & Navigation
+
+```mermaid
+sequenceDiagram
+    participant U as Traveler
+    participant S as Server
+    participant AI as Gemini / OpenAI
+    participant Map as Mapbox GL JS
+    participant GM as Google Maps
+
+    U->>S: GET /trips/plan (or click "Plan a Trip to [Location]" from stay)
+    S->>U: Render trip preferences (dates, preferences, budget, pace)
+    U->>S: POST /trips/generate (destination, checkIn, checkOut, preferences)
+    S->>AI: Generate day-by-day itinerary with exact timings & places
+    S->>S: Group attractions geographically & build official Google Maps URLs
+    S->>U: Redirect /trips/preview with itinerary timeline
+    U->>Map: Switch between Day 1, Day 2, Day 3 tabs / inspect numbered markers
+    U->>GM: Click "Navigate with Google Maps" (opens driving route to destination)
+    U->>GM: Click "Next Destination →" (opens route from current to next stop)
+    U->>S: POST /trips/save (isLoggedIn)
+    S->>U: Save to "My Trips" dashboard (/trips)
+```
+
+
 ---
 
 ## 🔑 Authentication & Authorization
@@ -389,6 +417,25 @@ Indexed with a MongoDB text index on `title`, `location`, and `country` for sear
 
 </details>
 
+<details>
+<summary><strong>Trip</strong></summary>
+
+| Field | Type | Notes |
+|---|---|---|
+| `user` | ObjectId → `User` | Required; user who saved the itinerary |
+| `destination` | String | Required; travel destination |
+| `checkIn`, `checkOut` | Date | Required; arrival and departure dates |
+| `totalDays` | Number | Required; computed total duration of stay |
+| `preferences` | `[String]` | User-chosen categories (Adventure, Nature, Culture, Food, Heritage, Famous Places) |
+| `budget` | String | `"Budget"` \| `"Moderate"` \| `"Luxury"` |
+| `pace` | String | `"Relaxed"` \| `"Balanced"` \| `"Packed"` |
+| `title`, `summary` | String | Generated title and overview summary |
+| `days` | `[DaySchema]` | Array of daily schedules containing: `dayNumber`, `theme`, `summary`, and `places` |
+| `days.places` | `[PlaceSchema]` | Array of attractions: `name`, `location`, `shortDescription`, `importance`, `speciality`, `bestTimeToVisit`, `explorationDuration`, `arrivalTime`, `departureTime`, `travelDistance`, `travelDuration`, `coordinates` (`[lng, lat]`), `googleMapsUrl`, and `nextGoogleMapsUrl` |
+| `createdAt` | Date | Default `Date.now` |
+
+</details>
+
 ---
 
 ## 🔌 API / Routes
@@ -441,6 +488,18 @@ ay check |
 | GET / POST | `/login/otp/request` | Render / request an OTP | Public, rate-limited |
 | GET / POST | `/login/otp/verify` | Render / verify an OTP | Public, rate-limited |
 
+**AI Trip Planner** — mounted at `/trips`
+
+| Method | Route | Purpose | Guarded by |
+|---|---|---|---|
+| GET | `/plan` | Render AI Trip Planner preferences page (`?destination=&listingId=`) | Public |
+| POST | `/generate` | Generate personalized day-by-day itinerary with timings & coordinates | Public, Rate-limited, `validateTripGenerate` |
+| GET | `/preview` | Preview currently generated itinerary before saving | Public |
+| POST | `/save` | Save generated itinerary to user's MongoDB account | `isLoggedIn` |
+| GET | `/` | My Trips dashboard: view all saved trip itineraries | `isLoggedIn` |
+| GET | `/:id` | View specific saved itinerary with Mapbox route & Google Maps navigation | `isLoggedIn`, `isTripOwner` |
+| DELETE | `/:id` | Delete a saved trip itinerary | `isLoggedIn`, `isTripOwner` |
+
 ---
 
 ## 📁 Project Structure
@@ -461,36 +520,45 @@ Wanderlust-Travel-Stay-Booking-Application/
 │   ├── listing.js         # Listing CRUD, search, geocoding
 │   ├── otp.js              # OTP request/verify logic
 │   ├── review.js          # Review create/delete
+│   ├── trip.js            # AI Trip Planner: generate, preview, save, list, delete
 │   └── user.js             # Signup, login, logout, password reset, Google callback
 │
 ├── init/
 │   ├── data.js             # Seed listing data
 │   └── index.js            # Seed script entry point
 │
-├── modals/                 # Mongoose schemas (see naming note above)
+├── modals/                 # Mongoose schemas
 │   ├── booking.js
 │   ├── listing.js
 │   ├── review.js
+│   ├── trip.js             # Trip schema: dates, preferences, coordinates, places
 │   └── user.js
 │
 ├── public/
 │   ├── css/                 # Per-page stylesheets
+│   │   ├── trip-planner.css # AI Trip Planner responsive UI & animations
+│   │   └── ...
 │   └── js/
 │       ├── map.js           # Mapbox GL rendering on the listing page
+│       ├── trip-map.js      # Interactive route map with numbered markers & polylines
+│       ├── trip-planner.js  # Dynamic days calculation, preference toggles & AJAX flow
 │       └── script.js
 │
 ├── routes/
 │   ├── booking.js
 │   ├── listing.js
 │   ├── review.js
+│   ├── trip.js             # AI Trip Planner REST routes with rate limiting
 │   └── user.js
 │
 ├── tests/
 │   ├── auth.test.js         # Signup, login, OTP, Google OAuth, password reset
 │   ├── bookings.test.js     # Overlap detection, pricing, Razorpay verification
-│   └── listings.test.js     # CRUD + ownership authorization
+│   ├── listings.test.js     # CRUD + ownership authorization
+│   └── trips.test.js        # AI trip planner validation, generation, saving, authorization
 │
 ├── utility/
+│   ├── aiPlanner.js         # Smart AI itinerary generation engine & Mapbox enricher
 │   ├── ExpressError.js      # Custom error class
 │   └── wrapAsync.js          # Async route error wrapper
 │
@@ -499,6 +567,7 @@ Wanderlust-Travel-Stay-Booking-Application/
 │   ├── includes/              # navbar, footer, flash partials
 │   ├── layouts/                # ejs-mate boilerplate layout
 │   ├── listings/                # index, show, new, edit
+│   ├── trips/                   # plan.ejs, show.ejs, index.ejs
 │   ├── users/                    # signup, login, forgot/reset, OTP forms
 │   └── error.ejs
 │
@@ -519,8 +588,8 @@ Wanderlust-Travel-Stay-Booking-Application/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Swarajbabu/Wanderlust-Travel-Stay-Booking-Application.git
-cd Wanderlust-Travel-Stay-Booking-Application
+git clone https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform.git
+cd WonderLust-retal-and-stay-booking-platform
 ```
 
 ### 2. Install dependencies
@@ -556,7 +625,9 @@ Taken directly from `.env.example` and `config/validateEnv.js`. The app **will n
 | `GOOGLE_CLIENT_ID` | ✅ | Google OAuth2 |
 | `GOOGLE_CLIENT_SECRET` | ✅ | Google OAuth2 |
 | `GOOGLE_CALLBACK_URL` | ✅ | Google OAuth2 redirect URL |
-| `PORT` | Optional | Defaults to `8080` |
+| `GEMINI_API_KEY` | Optional | Google Gemini API key for dynamic AI Trip Planning (uses intelligent fallback if unset) |
+| `OPENAI_API_KEY` | Optional | OpenAI API key alternative for AI Trip Planning |
+| `PORT` | Optional | Defaults to `8080` (or `8081` when Oracle listener occupies 8080) |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM` | Optional | If unset, outgoing emails are logged via Winston instead of sent (`config/email.js`) |
 
 > ⚠️ **Verify:** `.env.example` sets `PORT=8080`, but the sample `GOOGLE_CALLBACK_URL` points at `http://localhost:8081/...`. `app.js` defaults to port `8080` if `PORT` is unset. Double-check your `.env` uses matching ports before testing Google OAuth locally.
@@ -600,8 +671,9 @@ Runs `jest --runInBand --detectOpenHandles --forceExit`. Tests spin up `mongodb-
 | `tests/auth.test.js` | Signup + auto-login, wrong-password rejection, protected-route redirects, forgot/reset password, Google OAuth signup + account linking, email-verification gating, OTP request/verify |
 | `tests/bookings.test.js` | Non-overlapping bookings + server-side price calculation, overlap rejection, Razorpay signature verification confirming a booking |
 | `tests/listings.test.js` | Owner CRUD flow, non-owner update/delete rejection |
+| `tests/trips.test.js` | AI Trip preferences rendering, input date validation, AI itinerary generation with navigation URLs, authenticated trip saving, user trips list, and ownership authorization |
 
-13 test cases total across the three files.
+22 test cases total across 4 test suites (100% passing).
 
 ---
 
@@ -638,7 +710,8 @@ To deploy your own instance on any Node-friendly host (Render, Railway, Fly.io, 
 - Booking price always computed server-side, never accepted from the client
 - Razorpay payment signatures verified server-side via HMAC-SHA256 before confirming a booking
 - Search input is regex-escaped before being used in a MongoDB query
-- Startup fails fast if required secrets are missing (`config/validateEnv.js`)
+- Startup fails fast if required secret
+s are missing (`config/validateEnv.js`)
 - Secrets excluded from git via `.gitignore`, with a `.env.example` template for onboarding
 
 **Recommended Improvements**
