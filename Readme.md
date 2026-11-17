@@ -14,7 +14,7 @@ A full-stack vacation rental platform — built end-to-end with session-based au
 [![Razorpay](https://img.shields.io/badge/Razorpay-0C2451?style=for-the-badge&logo=razorpay&logoColor=white)](https://razorpay.com/)
 [![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white)](https://jestjs.io/)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap_5-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
-[![Live Demo](https://img.shields.io/badge/Live_Demo-onrender.com-fe424d?style=for-the-badge&logo=render&logoColor=white)](https://wonderlust-retal-and-stay-booking.onrender.com/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-wonderlust--retal--and--stay--booking.onrender.com-fe424d?style=for-the-badge&logo=render&logoColor=white)](https://wonderlust-retal-and-stay-booking.onrender.com/)
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/sharathchelimella/WonderLust-retal-and-stay-booking-platform?style=flat-square)](https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform/stargazers)
 [![GitHub last commit](https://img.shields.io/github/last-commit/sharathchelimella/WonderLust-retal-and-stay-booking-platform?style=flat-square)](https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform/commits/main)
@@ -800,7 +800,7 @@ Contributions are welcome.
 
 ```bash
 # 1. Fork the repository, then clone your fork
-git clone https://github.com/<your-username>/Wanderlust-Travel-Stay-Booking-Application.git
+git clone https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform.git
 
 # 2. Create a feature branch
 git checkout -b feature/your-feature-name
