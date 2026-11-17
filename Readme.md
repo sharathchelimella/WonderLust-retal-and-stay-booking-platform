@@ -14,13 +14,13 @@ A full-stack vacation rental platform — built end-to-end with session-based au
 [![Razorpay](https://img.shields.io/badge/Razorpay-0C2451?style=for-the-badge&logo=razorpay&logoColor=white)](https://razorpay.com/)
 [![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white)](https://jestjs.io/)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap_5-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
-[![Live Demo](https://img.shields.io/badge/Live_Demo-wanderlust.swarajvecha.in-fe424d?style=for-the-badge&logo=google-chrome&logoColor=white)](https://wanderlust.swarajvecha.in/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-onrender.com-fe424d?style=for-the-badge&logo=render&logoColor=white)](https://wonderlust-retal-and-stay-booking.onrender.com/)
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/sharathchelimella/WonderLust-retal-and-stay-booking-platform?style=flat-square)](https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform/stargazers)
 [![GitHub last commit](https://img.shields.io/github/last-commit/sharathchelimella/WonderLust-retal-and-stay-booking-platform?style=flat-square)](https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform/commits/main)
 [![Open Issues](https://img.shields.io/github/issues/sharathchelimella/WonderLust-retal-and-stay-booking-platform?style=flat-square)](https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform/issues)
 
-[**🌐 Live Demo**](https://wanderlust.swarajvecha.in/) · [**Report Bug**](https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform/issues) · [**Request Feature**](https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform/issues)
+[**🌐 Live Demo**](https://wonderlust-retal-and-stay-booking.onrender.com/) · [**Report Bug**](https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform/issues) · [**Request Feature**](https://github.com/sharathchelimella/WonderLust-retal-and-stay-booking-platform/issues)
 
 </div>
 
@@ -694,7 +694,7 @@ Runs `jest --runInBand --detectOpenHandles --forceExit`. Tests spin up `mongodb-
 ## 🚀 Deployment
 
 The live application is deployed and publicly accessible at:
-🌐 **[https://wanderlust.swarajvecha.in/](https://wanderlust.swarajvecha.in/)**
+🌐 **[https://wonderlust-retal-and-stay-booking.onrender.com/](https://wonderlust-retal-and-stay-booking.onrender.com/)**
 
 To deploy your own instance on any Node-friendly host (Render, Railway, Fly.io, an EC2/VM, etc.):
 
@@ -706,7 +706,7 @@ To deploy your own instance on any Node-friendly host (Render, Railway, Fly.io, 
 6. Once deployed over HTTPS, flip the CSRF cookie's `secure` flag to `true` in `app.js` (currently `false` for local HTTP development — see the code comment).
 7. Static assets are served from `public/` by Express; Cloudinary handles listing images independently.
 
-- **Production URL:** [https://wanderlust.swarajvecha.in/](https://wanderlust.swarajvecha.in/)
+- **Production URL:** [https://wonderlust-retal-and-stay-booking.onrender.com/](https://wonderlust-retal-and-stay-booking.onrender.com/)
 
 ---
 
